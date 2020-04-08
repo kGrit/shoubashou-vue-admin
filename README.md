@@ -60,6 +60,14 @@ import Login from '../views/Login/login'
 ## 页面渲染
 public中得index.html 进入之后去找main.js,挂载了#app,去找APP.vue
 
+## 安装element-ui
+`npm i element-ui -S`
+1. 在 main.js中引入（样式）
+```js
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
+```
 ## login页面
 ### 设置基础
 - 高度又内容撑开时，想要全屏高度，两种方法
@@ -74,6 +82,38 @@ public中得index.html 进入之后去找main.js,挂载了#app,去找APP.vue
 ```
 2. 100%
 设置`height:100%`,由于100%是继承父级高度，所以也要设置#app,body,html高度为100%
-## 安装element-ui
-`npm i element-ui -s`
-1. 引入（样式）
+### class绑定得方式
+1. 最简单得方式
+`:class="{'active':isActive}"`
+2. 判断是否绑定一个active
+`:class="{'active':isActive ==1}"`或者`:class="{'active':isActive === index}"`
+3. 绑定并判断多个
+- 第一种（用逗号隔开）
+`:class="{'active':isActive,'sort':isSort}`
+- 第二种（放在data中）
+```js
+:class ="classObject"
+data() {
+    return {
+        classObject: {active: true,sort:false}
+    }
+}
+```
+- 第三种（使用computed属性）
+```js
+:class ="classObject"
+data() {
+    return {
+        isActive: true,
+        isSort: false,
+    }
+},
+computed: {
+    classObject: function() {
+        return {
+            active: this.isActive,
+            sort: this.isSort
+        }
+    }
+}
+```

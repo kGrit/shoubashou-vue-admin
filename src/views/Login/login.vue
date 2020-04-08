@@ -1,6 +1,8 @@
 <template>
   <div class="login">
-      我是登录页
+      <div class="tab-wra">
+        <el-button>hao</el-button>
+      </div>
   </div>
 </template>
 
