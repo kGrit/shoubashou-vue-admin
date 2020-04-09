@@ -59,6 +59,10 @@ import Login from '../views/Login/login'
 ```
 ## 页面渲染
 public中得index.html 进入之后去找main.js,挂载了#app,去找APP.vue
+## 安装依赖的时候node-sass问题
+执行以下两条命令
+1. npm install sass-loader --save-dev
+2. npm install node-sass --save-dev
 
 ## 安装element-ui
 `npm i element-ui -S`
@@ -117,3 +121,38 @@ computed: {
     }
 }
 ```
+### 登录，注册切换
+-  第一种方式
+1. 点击的时候，将此时的Index传入
+2. 利用map函数,遍历data中的值
+3. 将index和传入的Index比较的值赋给高亮的值
+```js
+@click="toggleMenu(i)"
+toggleMenu (i) {
+      // 遍历每一项（使isCurrent的值为遍历的值）
+      // 这里用forEach,map均可
+      this.menu.map((el, index) => {
+        el.isCurrent = (index === i)
+      })
+    }
+```
+- 第二种方式
+1. 点击的时候，遍历data中的数据
+2. 让每一项都变为false
+3. 让点击的项变为true
+```js
+@click="toggleMenu(item)"
+    toggleMenu (item) {
+      // 将item传进来
+      // 这里用forEach,map均可
+      this.menu.forEach(e => {
+        // 将所有的都变为false
+        e.isCurrent = false
+      })
+      item.isCurrent = true
+    }
+```
+### 检验
+1. 将校验规则封装
+2. 如果校验规则中有eslint阻止转义的可以添加注释帮助解决
+3. 使用  `<el-row :gutter="10">` ` <el-col :span="15">`调节样式布局，:gutrrer是指中间隔得距离
