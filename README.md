@@ -22,6 +22,9 @@
 `prependData: '@import "./src/styles/main.scss";'`
 ### lintOnSave
 选择是否打开eslint
+## 安装依赖得时候nodesass安装不成功
+解决方法，执行`npm install sass-loader --save-dev`
+`npm install node-sass --save-dev`这两条命令
 
 ## 文件目录
 ### styles目录
@@ -117,3 +120,4 @@ computed: {
     }
 }
 ```
+
