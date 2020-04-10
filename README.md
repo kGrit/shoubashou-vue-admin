@@ -62,6 +62,10 @@ import Login from '../views/Login/login'
 ```
 ## 页面渲染
 public中得index.html 进入之后去找main.js,挂载了#app,去找APP.vue
+## 安装依赖的时候node-sass问题
+执行以下两条命令
+1. npm install sass-loader --save-dev
+2. npm install node-sass --save-dev
 
 ## 安装element-ui
 `npm i element-ui -S`
@@ -120,4 +124,62 @@ computed: {
     }
 }
 ```
-
+### 登录，注册切换
+-  第一种方式
+1. 点击的时候，将此时的Index传入
+2. 利用map函数,遍历data中的值
+3. 将index和传入的Index比较的值赋给高亮的值
+```js
+@click="toggleMenu(i)"
+toggleMenu (i) {
+      // 遍历每一项（使isCurrent的值为遍历的值）
+      // 这里用forEach,map均可
+      this.menu.map((el, index) => {
+        el.isCurrent = (index === i)
+      })
+    }
+```
+- 第二种方式
+1. 点击的时候，遍历data中的数据
+2. 让每一项都变为false
+3. 让点击的项变为true
+```js
+@click="toggleMenu(item)"
+    toggleMenu (item) {
+      // 将item传进来
+      // 这里用forEach,map均可
+      this.menu.forEach(e => {
+        // 将所有的都变为false
+        e.isCurrent = false
+      })
+      item.isCurrent = true
+    }
+```
+### 表单
+1. 直接复制element-ui中的自定义表单，对样式和校验规则进行修改
+2. 在验证码中使用  `<el-row :gutter="10">` ` <el-col :span="15">`调节样式布局，:gutrrer是指中间隔得距离
+### 检验
+1. 将校验规则封装(utils文件夹中的validate.js)
+```js
+export function valiUsername (str) {
+  // 如果校验规则中有eslint阻止转义的可以添加注释帮助解决
+  // eslint-disable-next-line no-useless-escape
+  const reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+  return reg.test(str)
+}
+```
+2. 使用import导入
+ ```js
+ // 这里的@需要在vue.config.js中的alis进行配置
+ import { valiUsername} from '@/utils/validates'
+ ```
+### 重复密码校验
+1. 只有在注册的时候才会显示重复密码的校验
+2. 使用v-show或者v-if完成
+` v-show="model === 'register'"`
+v-if可以直接提交没有问题
+v-show只是将重复密码隐藏了，本身的校验还是存在的，所以要在校验中单独判断
+```js
+// 这样写就可以直接通过验证，相当于return了，后面不在执行
+ if (this.model === 'login') { callback() }
+ ```

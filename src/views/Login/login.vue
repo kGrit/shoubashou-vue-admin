@@ -1,88 +1,130 @@
 <template>
   <div class="login">
-      <div class="tab-wra">
-      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm"  class="demo-ruleForm" size="medium" >
-        <el-form-item  prop="email" label="活动名称">
-          <el-input type="text" v-model="ruleForm.email" autocomplete="off" id="email"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-           <el-input type="text" v-model="ruleForm.password" autocomplete="off"></el-input>
-         </el-form-item>
-        <el-form-item  prop="code" class="code">
-          <label for="code">验证码</label>
-          <el-row :gutter="10">
-            <el-col :span="15">
-              <el-input v-model.number="ruleForm.code" id="code" minlength="6" maxlength="6"></el-input>
-            </el-col>
-            <el-col :span="9">
-              <el-button type="success" plain>发送验证码</el-button>
-            </el-col>
-          </el-row>
-
-        </el-form-item>
-        <el-form-item>
-          <el-button type="danger" @click="submitForm('ruleForm')" class="submit" >提交</el-button>
-        </el-form-item>
-      </el-form>
+      <div class="login-wrap">
+        <ul class="menu-tab">
+          <li v-for="item in menu" :key="item.id" :class="{'current':item.isCurrent}" @click="toggleMenu(item)">{{item.text}}</li>
+        </ul>
+        <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="info-ruleForm" size="medium" >
+          <el-form-item label="邮箱" prop="username" >
+            <el-input type="text" v-model="ruleForm.username" autocomplete="off" id="username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password"  >
+            <el-input type="password" v-model="ruleForm.password" autocomplete="off" minlength="6" maxlength="12"></el-input>
+          </el-form-item>
+          <el-form-item label="重复密码" prop="passwords"  v-show="model === 'register'">
+            <el-input type="password" v-model="ruleForm.passwords" autocomplete="off" minlength="6" maxlength="12"></el-input>
+          </el-form-item>
+          <el-form-item label="验证码" prop="code" class="code">
+            <label for="code">验证码</label>
+            <el-row :gutter="10">
+              <el-col :span="15"><el-input v-model.number="ruleForm.code" minlength="6" maxlength="6"></el-input></el-col>
+              <el-col :span="9"><el-button type="success" plain  class="block">获取验证码</el-button></el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="danger" @click="submitForm('ruleForm')" class="block">提交</el-button>
+          </el-form-item>
+        </el-form>
       </div>
   </div>
 </template>
 
 <script>
-import { stripscript, username, pas } from '@/utils/validat'
+import { valiUsername, valiPass, valiCode, stripscript } from '@/utils/validates'
 export default {
   data () {
-    var validateEmail = (rule, value, callback) => {
-      // const reg = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
+    var validateName = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入邮箱'))
-      } else if (!username(value)) {
-        callback(new Error('用户名格式有误'))
+        callback(new Error('请输入用户名'))
+      } else if (!valiUsername(value)) {
+        callback(new Error('用户名邮箱格式不正确'))
       } else {
         callback()
       }
     }
     var validatePass = (rule, value, callback) => {
-      this.ruleForm.password = stripscript(value)
-      value = stripscript(value)
-      // const reg = /^(?![0-9]+)(?![a−zA−Z]+)[0-9A-Za-z]{8,20}$/
       if (value === '') {
-        callback(new Error('密码不能为空'))
-      } else if (!pas(value)) {
-        callback(new Error('密码必须同时包含字母和数组'))
+        callback(new Error('请输入密码'))
+      } else if (!valiPass(value)) {
+        callback(new Error('密码为6-12位的字母+数字组合'))
+      } else {
+        callback()
+      }
+    }
+    var validateRepass = (rule, value, callback) => {
+      if (this.model === 'login') { callback() }
+      if (value === '') {
+        callback(new Error('请输入重复密码'))
+        // 两次密码是否相同
+      } else if (value !== this.ruleForm.password) {
+        callback(new Error('两次密码不相同'))
       } else {
         callback()
       }
     }
     var validateCode = (rule, value, callback) => {
+      value = stripscript(value)
+      this.ruleForm.code = value
       if (value === '') {
-        callback(new Error('验证码不为空'))
+        return callback(new Error('请输入验证码'))
+      } else if (!valiCode(value)) {
+        setTimeout(() => {
+          callback(new Error('验证码格式有误'))
+        }, 1000)
       } else {
         callback()
       }
     }
     return {
+      menu: [
+        {
+          id: 0,
+          text: '登录',
+          isCurrent: true,
+          type: 'login'
+        },
+        {
+          id: 1,
+          text: '注册',
+          isCurrent: false,
+          type: 'register'
+        }
+      ],
+      model: 'login',
       ruleForm: {
-        email: '',
+        username: '',
         password: '',
+        passwords: '',
         code: ''
       },
       rules: {
-        email: [
-          { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { validator: validateEmail, trigger: ['blur'] }
+        username: [
+          { validator: validateName, trigger: ['blur', 'change'] }
         ],
         password: [
-          { validator: validatePass, trigger: 'blur' }
+          { validator: validatePass, trigger: 'blur' },
+          { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
+        ],
+        passwords: [
+          { validator: validateRepass, trigger: 'blur' }
         ],
         code: [
-          { validator: validateCode, trigger: ['blur', 'change'] },
-          { min: 6, max: 6, message: '长度为6个字符', trigger: ['blur', 'change'] }
+          { validator: validateCode, trigger: ['blur', 'change'] }
         ]
       }
     }
   },
   methods: {
+    toggleMenu (item) {
+      // 将item传进来
+      // 点击改变model状态
+      this.model = item.type
+      this.menu.forEach(e => {
+        // 将所有的都变为false
+        e.isCurrent = false
+      })
+      item.isCurrent = true
+    },
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -97,7 +139,6 @@ export default {
       this.$refs[formName].resetFields()
     }
   }
-
 }
 </script>
 
@@ -107,15 +148,36 @@ export default {
     background-color: var(--themeColor);
     height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
-    .tab-wra {
+    align-items: center;
+    .login-wrap {
       width: 330px;
-      .code {
-        margin-bottom: 20px;
+      .menu-tab {
+        margin: auto;
+        text-align: center;
+        margin-bottom: 40px;
+        li {
+          width: 88px;
+          height: 36px;
+          line-height: 36px;
+          border-radius: 2px;
+          display: inline-block;
+          cursor: pointer;
+          color: #fff;
+          margin-right: 10px;
+          &.current {
+            background-color: rgba(0,0,0,.1);
+          }
+        }
       }
-      .submit {
-        width: 100%;
+      .info-ruleForm {
+        .block {
+          // display: block;
+          width: 100%
+        }
+        .code {
+          margin-bottom: 32px;
+        }
       }
     }
 }
