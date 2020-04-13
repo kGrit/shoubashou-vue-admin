@@ -183,3 +183,8 @@ v-show只是将重复密码隐藏了，本身的校验还是存在的，所以�
 // 这样写就可以直接通过验证，相当于return了，后面不在执行
  if (this.model === 'login') { callback() }
  ```
+
+ ## 封装request 
+ > 在utils文件夹中的request文件放封装的axios请求
+ 1. 安装axios 
+ 2. 添加请求拦截器和响应拦截器

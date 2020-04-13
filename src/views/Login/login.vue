@@ -31,6 +31,7 @@
 
 <script>
 import { valiUsername, valiPass, valiCode, stripscript } from '@/utils/validates'
+// import service from '@/utils/request'
 export default {
   data () {
     var validateName = (rule, value, callback) => {
